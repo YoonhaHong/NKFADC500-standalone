@@ -7,29 +7,22 @@
 #include <sstream>
 #include <string>
 
-#include "TROOT.h"
-#include "NoticeNKFADC500ROOT.h"
 #include "usb3comroot.h"
+#include "NoticeNKFADC500ROOT.h"
+
 using namespace std;
 
 int main(int argc, char** argv){
 int SID = 1;
-R__LOAD_LIBRARY(libusb3comroot.so);		// load usb3 library
-R__LOAD_LIBRARY(libNoticeNKFADC500ROOT.so);// load nkfadc500 library
-
     const int nCh = 4;
     usb3comroot *usb = new usb3comroot;
+    usb->USB3Init(0);
 
     // define KFADC500 class
-    cout << "SETUP..." << endl;
     NKNKFADC500 *nkfadc = new NKNKFADC500;
 
     // open KFADC500
-    cout << "OPENING NKFADC500..." << endl;
     nkfadc->NKFADC500open(SID, 0);
-
-	cout << "OPEN ok" << endl;
-
 
     FILE* fp = fopen("setup.txt" ,"rt");
 	if ( fp == NULL ){
@@ -39,6 +32,7 @@ R__LOAD_LIBRARY(libNoticeNKFADC500ROOT.so);// load nkfadc500 library
 	// NKFADC500 setting: every timing setting unit is ns
 	// --------------------------------------------------
 	unsigned long fRL = 4;
+    	fscanf(fp, "%lu", &fRL);
 	nkfadc->NKFADC500write_RL(SID, fRL);
 	// Recording length 
 	// ns scale: 1=128, 2=256, and 4=512
@@ -46,8 +40,8 @@ R__LOAD_LIBRARY(libNoticeNKFADC500ROOT.so);// load nkfadc500 library
 
 	unsigned long fTLT = 0x8888;
     	fscanf(fp, "%lx", &fTLT);
+	cout << fTLT << endl;
 	nkfadc->NKFADC500write_TLT(SID, fTLT);
-	cout << "TLT write ok" << endl;
 	// Trigger lookup table value, any: FFFE, 1&3&2&4: 8000, 1&2|3&4: F888, 1&3|2&4: ECA0
 	// 1 must be fired: AAAA
 	// 2 must be fired: CCCC
@@ -93,7 +87,6 @@ R__LOAD_LIBRARY(libNoticeNKFADC500ROOT.so);// load nkfadc500 library
     unsigned long fSR = 1;        // sampling rate /1/2/4/8 (S.R. = 500 / sr MHz)
     nkfadc->NKFADC500write_DSR(SID, fSR);
 
-    usb->USB3Init(0);
     cout << "usb ok" << endl;
 
     // set NKFADC500

@@ -1,7 +1,8 @@
 #include <chrono>
+#include <stdlib.h>
+#include <stdio.h>
 #include <csignal>
 #include <cstdio>
-#include <cstdlib>
 #include <cstring>
 #include <fstream>
 #include <iostream>
@@ -16,7 +17,6 @@
 #include "usb3comroot.h"
 using namespace std;
 
-#define SID 1
 #define DRAM_SIZE       (10)                  // available PC DRAM size in Mbyte
 #define CHUNK_SIZE      (DRAM_SIZE*1024)      // array size in kilobyte
 #define DATA_ARRAY_SIZE (DRAM_SIZE*1024*1024) // array size in byte
@@ -33,6 +33,7 @@ void sigint_handler(int sig)
 int main(int argc, char** argv)
 {
 	std::signal (SIGINT, sigint_handler);
+	int SID = 1;
 
 	//Local variables
 	const int runNo  = std::atoi( argv[1] ); //Run ID
@@ -44,7 +45,7 @@ int main(int argc, char** argv)
 	//Output file
 	string fName;
 	ofstream ofStr;
-	fName = Form("./data/FADCData_%i.dat", runNo);
+	fName = Form("./FADCData_%i.dat", runNo);
 	ofStr.open(fName.c_str(), std::ios::binary);
 
 	//Raw data array
@@ -61,7 +62,7 @@ int main(int argc, char** argv)
 	nkfadc->NKFADC500start(SID);
 
 
-	chrono::steady_clock::time_point tStart, tStop;
+	chrono::steady_clock::time_point tStart, tLap, tStop;
 	tStart = chrono::steady_clock::now();
 
 	int tEvent = 1;
@@ -86,8 +87,10 @@ int main(int argc, char** argv)
 			}
 
 		if (tEvent>0 && tEvent%10==0){
-			cout << Form("Writing... %3li", bCount) << endl
-				 << "nBuff: " << nEvent << " tBuff: " << tEvent << endl;
+			tLap = chrono::steady_clock::now();
+			int tElapsed = chrono::duration_cast<chrono::seconds>(tLap - tStart).count();
+			cout << Form("%i th Buffer of %i : Time Elapsed %i sec",  tEvent, nEvent, tElapsed) << endl;
+
 		}
 		tEvent++;
 	}//While

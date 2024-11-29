@@ -1,0 +1,37 @@
+Info: nkusb_open_device: opening device Vendor ID = 0x547, Product ID = 0x1502, Serial ID = 1
+vme controller found!
+Info: nkusb_open_device: super speed device opened (bus = 2, address = 126, serial id = 1).
+Now NKFADC500 is ready.
+34952
+usb ok
+ch1 calibration delay = 3
+ch2 calibration delay = 20
+ch3 calibration delay = 18
+ch4 calibration delay = 12
+DRAM(0) is aligned, delay = 6, bitslip = 0
+DRAM(1) is aligned, delay = 6, bitslip = 0
+DRAM(2) is aligned, delay = 5, bitslip = 0
+DRAM(3) is aligned, delay = 5, bitslip = 0
+DRAM(4) is aligned, delay = 4, bitslip = 0
+DRAM(5) is aligned, delay = 4, bitslip = 0
+DRAM(6) is aligned, delay = 4, bitslip = 0
+DRAM(7) is aligned, delay = 4, bitslip = 0
+- Ped. trig interval (ms)  : 0
+- DRAM_ON                  : 1
+- Recording length         : 4
+- Trigger LUT value        : 8888
+- Local trigger on         : 7
+- ADC mode                 :    1    1    1    1
+- ADC offset               : 3500 3500  500  500
+- Pedestal                 : 3793 3748  291  480
+- Coincidence width        :   32   32   32   32
+- Wavefrom delay           :  312  312  256  256
+- Input pulse polarity     :    0    0    1    1    0 (TDC)
+- Pulse count interval (ns):   32   32   32   32
+- Pulse count threshold    :    1    1    1    1
+- Pulse width threshold    :    2    2    2    2
+- Peak sum width           :    2    2    2    2
+- Trigger deadtime (ns)    :    0    0    0    0
+- Trigger mode (FADC)      :    1    1    1    1
+- Discrimination threshold :  150  150   50   50
+- Zero suppression         :    0    0    0    0

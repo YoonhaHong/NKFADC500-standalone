@@ -98,26 +98,6 @@ bin/%: tmp/%.o $(CXX_OBJECTS)
 	@ echo "##########################################################"
 	$(CXX) -o $@ $^ $(filter-out -fPIC,$(CXXFLAGS)) $(CXX_DICTSRC) $(INCLUDES) $(LIBS)
 
-tmp/%.o: src/%.c
-	@ [ -d ./tmp ] || mkdir -p ./tmp
-	@ echo making $(@F) with $(<F) and $(^F)
-	@ $(COMPILE_CC) -c $< $(CCFLAGS) -o $@
-
-tmp/%.d: src/%.c
-	@ [-d ./tmp ] || mkdir -p ./tmp
-	@ echo making dependencies of $(<F)
-	@ $(SHELL) -ec '$(DEPEND_CXX) $< | sed -e "s/$*\.o[ :]*/tmp\/$(@F) tmp\/&/g" > $@'
-
-tmp/%.o: src/%.cc
-	@ [ -d ./tmp ] || mkdir -p ./tmp
-	@ echo making $(@F) with $(<F) and $(^F)
-	@ $(COMPILE_CXX) $< -o $@
-
-tmp/%.d: src/%.cc
-	@ [ -d ./tmp ] || mkdir -p ./tmp
-	@ echo making dependencies of $(<F)
-	@ $(SHELL) -ec '$(DEPEND_CXX) $< | sed -e "s/$*\.o[ :]*/tmp\/$(@F) tmp\/&/g" > $@'
-
 tmp/%.o: %.cc
 	@ echo $(INCLUDEDIR)
 	@ [ -d ./tmp ] || mkdir -p ./tmp
