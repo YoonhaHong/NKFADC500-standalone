@@ -1,0 +1,13 @@
+4
+0x8888
+100 100 50 50
+200 200 150 150
+0 0 1 1
+3500 3500 500 500
+-----------------------------------------------
+row1 = Recording length(1=128 ns / 2=256 / 4=512 / ... / 256=32 us)
+row2 = Trigger lookup table(CH1: AAAA / CH2: CCCC / 1|2: EEEE / 1&2: 8888)
+row3 = Discrimination threshold(1 mV ~ 0.6 ADC)
+row4 = ADC waveform delay from trigger point(0 ~ 31992)
+row5 = Input pulse polarity(0 = negative, 1 = positive)
+row6 = ADC offset value: 0 ~ 4095
