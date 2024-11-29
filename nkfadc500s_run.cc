@@ -78,7 +78,7 @@ int main(int argc, char** argv)
 		if (bCount > 0){
 				if (bCount > CHUNK_SIZE)
 				{
-					cout <<Form("WARNING! BCOUNT of mID_%i > CHUNK: truncate it...\n", a);
+					cout <<Form("WARNING! BCOUNT of mID_%i > CHUNK: truncate it...\n", SID);
 					bCount = CHUNK_SIZE;
 				}
 				nkfadc->NKFADC500read_DATA(SID, bCount, dArray);
@@ -86,7 +86,7 @@ int main(int argc, char** argv)
 			}
 
 		if (tEvent>0 && tEvent%10==0){
-			cout << Form("Writing... %3li", bCount); << endl
+			cout << Form("Writing... %3li", bCount) << endl
 				 << "nBuff: " << nEvent << " tBuff: " << tEvent << endl;
 		}
 		tEvent++;

@@ -9,22 +9,26 @@
 
 #include "TROOT.h"
 #include "NoticeNKFADC500ROOT.h"
+#include "usb3comroot.h"
 using namespace std;
 
-#define SID 1
-
 int main(int argc, char** argv){
+int SID = 1;
+R__LOAD_LIBRARY(libusb3comroot.so);		// load usb3 library
+R__LOAD_LIBRARY(libNoticeNKFADC500ROOT.so);// load nkfadc500 library
 
     const int nCh = 4;
     usb3comroot *usb = new usb3comroot;
-    usb->USB3Init(0);
-
 
     // define KFADC500 class
+    cout << "SETUP..." << endl;
     NKNKFADC500 *nkfadc = new NKNKFADC500;
 
     // open KFADC500
+    cout << "OPENING NKFADC500..." << endl;
     nkfadc->NKFADC500open(SID, 0);
+
+	cout << "OPEN ok" << endl;
 
 
     FILE* fp = fopen("setup.txt" ,"rt");
@@ -35,13 +39,15 @@ int main(int argc, char** argv){
 	// NKFADC500 setting: every timing setting unit is ns
 	// --------------------------------------------------
 	unsigned long fRL = 4;
-    nkfadc->NKFADC500write_RL(SID, fRL);
+	nkfadc->NKFADC500write_RL(SID, fRL);
 	// Recording length 
 	// ns scale: 1=128, 2=256, and 4=512
 	// us scale: 8=1, 16=2, 32=4, 64=8, 128=16, and 256=32
 
-	unsigned long fTLT;
-    fscanf(fp, "%x", &fTLT);
+	unsigned long fTLT = 0x8888;
+    	fscanf(fp, "%lx", &fTLT);
+	nkfadc->NKFADC500write_TLT(SID, fTLT);
+	cout << "TLT write ok" << endl;
 	// Trigger lookup table value, any: FFFE, 1&3&2&4: 8000, 1&2|3&4: F888, 1&3|2&4: ECA0
 	// 1 must be fired: AAAA
 	// 2 must be fired: CCCC
@@ -49,24 +55,24 @@ int main(int argc, char** argv){
 	// 1&2: 8888
 	// 3&4: F000
 
-	unsigned long fTHR[nCh];
-	fscanf(fp, "%ld %ld %ld %ld", fTHR[0]+0, fTHR[0]+1, fTHR[0]+2, fTHR[0]+3);
-	// Discrimination threshold
-	    // 1 ~ 4095 for pulse height threshold: 4,095 vs. 2 V (dynamic range) -> 100 ~ 50 mV 
+	unsigned long fTHR[nCh] = {100, 100, 100, 100};
+	fscanf(fp, "%lu %lu %lu %lu", fTHR+0, fTHR+1, fTHR+2, fTHR+3);
+	// Discrimination thresholu
+	    // 1 ~ 4095 for pulse height thresholu: 4,095 vs. 2 V (dynamic range) -> 100 ~ 50 mV 
         // mV = 0.6 x ADC
 
 	unsigned long fDLY[nCh];
-	fscanf(fp, "%ld %ld %ld %ld", fDLY[0]+0, fDLY[0]+1, fDLY[0]+2, fDLY[0]+3);
+	fscanf(fp, "%lu %lu %lu %lu", fDLY+0, fDLY+1, fDLY+2, fDLY+3);
 	// ADC waveform delay from trigger point: 0 ~ 31992
 		// By default +80 will be added as intrinsic delay of device (e.g. 64 = 64 + 80)
 		// Give the number can be devided by 2 (e.g., 48 for ~50, 72 for ~75)
 
 	unsigned long fPOL[nCh];	  
-	fscanf(fp, "%ld %ld %ld %ld", fPOL[0]+0, fPOL[0]+1, fPOL[0]+2, fPOL[0]+3);
+	fscanf(fp, "%lu %lu %lu %lu", fPOL+0, fPOL+1, fPOL+2, fPOL+3);
     // Input pulse polarity: 0 = negative, 1 = positive
 
 	unsigned long fDACOFF[nCh]; 
-	fscanf(fp, "%ld %ld %ld %ld", fDACOFF[0]+0, fDACOFF[0]+1, fDACOFF[0]+2, fDACOFF[0]+3);
+	fscanf(fp, "%lu %lu %lu %lu", fDACOFF+0, fDACOFF+1, fDACOFF+2, fDACOFF+3);
     // ADC offset value: 0 ~ 4095
 
 	unsigned long fTM_PC   = 1; // When 1 enables pulse count trigger 
@@ -74,27 +80,21 @@ int main(int argc, char** argv){
 	unsigned long fTM_PS   = 0; // When 1 enables peak sum trigger
 	unsigned long fTM_PSOR = 0; // When 1 enables peak sum OR trigger
 	unsigned long fTM = (fTM_PSOR<<3) | (fTM_PS<<2) | (fTM_PW<<1) | fTM_PC;
-    for(int Ch=0; Ch<4; Ch++) nkfadc->NKFADC500write_TM(SID, Ch + 1, tmode);
+    for(int Ch=0; Ch<4; Ch++) nkfadc->NKFADC500write_TM(SID, Ch + 1, fTM);
 	// Set trigger mode
 
     unsigned long fPTRIG = 0; 
     nkfadc->NKFADC500write_PTRIG(SID, fPTRIG);
     // pedestal trigger interval in ms, 0 for disable
-
-    unsigned long fSCALE = 1;         // prescale = 1 ~ 65535
+    
+    //unsigned long fSCALE = 1;         // prescale = 1 ~ 65535
     //nkfadc->NKFADC500write_PSCALE(SID, fSCALE);
 
     unsigned long fSR = 1;        // sampling rate /1/2/4/8 (S.R. = 500 / sr MHz)
     nkfadc->NKFADC500write_DSR(SID, fSR);
 
-    usb3comroot *usb = new usb3comroot;
     usb->USB3Init(0);
-
-    // define KFADC500 class
-    NKNKFADC500 *nkfadc = new NKNKFADC500;
-
-    // open KFADC500
-    nkfadc->NKFADC500open(SID, 0);
+    cout << "usb ok" << endl;
 
     // set NKFADC500
     nkfadc->NKFADC500resetTIMER(SID);
@@ -104,9 +104,10 @@ int main(int argc, char** argv){
     nkfadc->NKFADC500write_DRAMON(SID, 1);
     //nkfadc->NKFADC500write_TRIGENABLE(SID, trig_enable);
     for (int Ch = 0; Ch < 4; Ch++){
-        nkfadc->NKFADC500write_DLY(SID, Ch + 1, 32 + fDLY[Ch]);
         nkfadc->NKFADC500write_THR(SID, Ch + 1, fTHR[Ch]);
-        nkfadc->NKFADC500write_POL(SID, Ch + 1, fPOL[Ch]]);
+        nkfadc->NKFADC500write_DLY(SID, Ch + 1, 32 + fDLY[Ch]);
+        nkfadc->NKFADC500write_POL(SID, Ch + 1, fPOL[Ch]);
+        nkfadc->NKFADC500write_DACOFF(SID, Ch + 1, fDACOFF[Ch]);
         nkfadc->NKFADC500write_CW(SID, Ch + 1,  32);// Coincidence width: 8 ~ 32760
         nkfadc->NKFADC500write_PSW(SID, Ch + 1, 2);// Peak sum width: 2 ~ 16382 ns
         nkfadc->NKFADC500write_AMODE(SID, Ch + 1, 1);// ADC mode: 0 = raw, 1 = filtered

@@ -27,7 +27,7 @@ int GetDataLength(const char* inFile)
 	return (int)dataLength;
 }//GetDataLength
 
-int decode_nkfadc500s( const int RunNo = 20000 )
+int main( int argc, char** argv )
 {
 	//Setup
 	//-------------------------------------------
@@ -38,6 +38,7 @@ int decode_nkfadc500s( const int RunNo = 20000 )
 	const int nMID = 1;
 	const int nCh  = 4;
 
+	int RunNo = std::atoi( argv[1] );
 
 	const int DLen = GetDataLength(Form("%s/%s_%i.dat", FPath,FName,RunNo)); //header (32) + body (vary), per ch
 	const int TLen = DLen * nCh; //Total length
