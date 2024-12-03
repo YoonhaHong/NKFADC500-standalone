@@ -1,8 +1,9 @@
 DAQ code for NOTICE KOREA FADC500 standalone 
 ## DAQ  
 
-`./INIT.sh` : Initialize minitcb & NKFADC500 according to setup_singlemodule.txt
+`./INIT.sh` : Initialize minitcb & NKFADC500 according to setup.txt
 - ***EXECUTE ONE MORE TIME*** if Pedestal is not well applied;    ex) Pedestal: 2000  0  2000  0 
+- log saved as ./data/log_RUNNO.txt
 
 `./RUN.sh` : Specifies how many buffers to receive as an argument; if no argument is given, it will continue receiving indefinitely
 - 1 buffer = 8 Events for Recording Length = 512 ns
