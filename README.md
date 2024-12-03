@@ -1,5 +1,5 @@
-DAQ code for NOTICE KOREA FADC500 with miniTCB
-## Single modules daq for Sci trigger
+DAQ code for NOTICE KOREA FADC500 standalone 
+## DAQ  
 
 `./INIT.sh` : Initialize minitcb & NKFADC500 according to setup_singlemodule.txt
 - ***EXECUTE ONE MORE TIME*** if Pedestal is not well applied;    ex) Pedestal: 2000  0  2000  0 
@@ -10,7 +10,7 @@ DAQ code for NOTICE KOREA FADC500 with miniTCB
 
 `./STOP.sh` : Stop the ongoing run
 
-## Draw figures
+## Draw figures at ./macro
 
 `root -l 'Waveform_overlap.cpp( RUNNUMBER_TO_DRAW )`
 - This code draw this:
